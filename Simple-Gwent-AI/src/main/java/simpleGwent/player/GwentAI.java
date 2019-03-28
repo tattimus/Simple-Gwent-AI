@@ -23,6 +23,7 @@ public class GwentAI implements Player {
 
     @Override
     public Board play() {
+        skipRound();
         return this.board;
     }
 
@@ -33,7 +34,27 @@ public class GwentAI implements Player {
 
     @Override
     public void printHand() {
-        System.out.println("| || || || || || || || || || |");
+        System.out.println("|?|?|?|?|?|?|?|?|?|?|");
+    }
+    
+    public void roundAdvantagePlay() {
+        
+    }
+    
+    public void roundDisadvantagePlay() {
+        
+    }
+    
+    public void pointAdvantagePlay() {
+        
+    }
+    
+    public void pointDisadvantagePlay() {
+        
+    }
+    
+    public boolean weatherPlay() {
+        return true;
     }
 
 }

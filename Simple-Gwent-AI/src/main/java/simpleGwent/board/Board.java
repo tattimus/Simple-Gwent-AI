@@ -8,6 +8,8 @@ public class Board {
 
     private boolean p1Skip;
     private boolean p2Skip;
+    private int p1wins;
+    private int p2wins;
     private ArrayList<Card> p1row1;
     private ArrayList<Card> p1row2;
     private ArrayList<Card> p1row3;
@@ -26,12 +28,17 @@ public class Board {
         this.weather = new int[]{0, 0, 0};
         this.p1Skip = false;
         this.p2Skip = false;
+        this.p1wins = 0;
+        this.p2wins = 0;
     }
 
     /**
      * play card given as parameter to the selected players side of the board
      */
     public void playCard(int playerNo, Card card) {
+        if (this.getWeather()[card.getRow() - 1] == 1) {
+            card.setAffected(true);
+        }
         if (playerNo == 1 && card.getRow() == 1) {
             this.p1row1.add(card);
         } else if (playerNo == 1 && card.getRow() == 2) {
@@ -47,6 +54,23 @@ public class Board {
         }
     }
 
+    public void clearBoard() {
+        p1row1 = new ArrayList<>();
+        p1row2 = new ArrayList<>();
+        p1row3 = new ArrayList<>();
+        p2row1 = new ArrayList<>();
+        p2row2 = new ArrayList<>();
+        p2row3 = new ArrayList<>();
+        this.weather[0] = 0;
+        this.weather[1] = 0;
+        this.weather[2] = 0;
+        this.p1Skip = false;
+        this.p2Skip = false;
+    }
+
+    /**
+     * puts weather effect on the board and on the cards it affects
+     */
     public void setWeather(weatherCard card) {
         if (card.getRow() == 1) {
             toggleWeatherOfRow1(true);
@@ -68,7 +92,7 @@ public class Board {
     /**
      * Used to pass the weather effect to the cards on first row
      */
-    public void toggleWeatherOfRow1(boolean to) {
+    private void toggleWeatherOfRow1(boolean to) {
         for (int i = 0; i < this.p1row1.size(); i++) {
             this.p1row1.get(i).setAffected(to);
         }
@@ -77,7 +101,7 @@ public class Board {
         }
     }
 
-    public void toggleWeatherOfRow2(boolean to) {
+    private void toggleWeatherOfRow2(boolean to) {
         for (int i = 0; i < this.p1row2.size(); i++) {
             this.p1row2.get(i).setAffected(to);
         }
@@ -86,16 +110,16 @@ public class Board {
         }
     }
 
-    public void toggleWeatherOfRow3(boolean to) {
-        for (int i = 0; i < this.p1row2.size(); i++) {
-            this.p1row2.get(i).setAffected(to);
+    private void toggleWeatherOfRow3(boolean to) {
+        for (int i = 0; i < this.p1row3.size(); i++) {
+            this.p1row3.get(i).setAffected(to);
         }
-        for (int i = 0; i < this.p2row2.size(); i++) {
-            this.p2row2.get(i).setAffected(to);
+        for (int i = 0; i < this.p2row3.size(); i++) {
+            this.p2row3.get(i).setAffected(to);
         }
     }
 
-    public void toggleWeatherOfAll() {
+    private void toggleWeatherOfAll() {
         toggleWeatherOfRow1(false);
         toggleWeatherOfRow2(false);
         toggleWeatherOfRow3(false);
@@ -196,18 +220,37 @@ public class Board {
     /**
      * Tells to the player who asked if the opponent has skipped
      */
-    public boolean opponentHasSkipped(int player) {
+    public boolean playerHasSkipped(int player) {
         if (player == 1) {
-            return this.p2Skip;
+            return p1Skip;
         } else {
-            return this.p1Skip;
+            return p2Skip;
+        }
+    }
+
+    /**
+     * used when player wins a round
+     */
+    public void addWinToPlayer(int player) {
+        if (player == 1) {
+            p1wins++;
+        } else {
+            p2wins++;
+        }
+    }
+
+    public int roundsWonByPlayer(int player) {
+        if (player == 1) {
+            return p1wins;
+        } else {
+            return p2wins;
         }
     }
 
     private void printLine(ArrayList<Card> cards) {
         System.out.print("|");
         for (int i = 0; i < cards.size(); i++) {
-            System.out.print("-" + cards.get(i).toString());
+            System.out.print("-" + cards.get(i).getValue());
         }
         System.out.println("-|");
     }

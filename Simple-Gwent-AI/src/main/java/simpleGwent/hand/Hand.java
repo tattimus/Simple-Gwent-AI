@@ -1,19 +1,20 @@
 package simpleGwent.hand;
 
-import java.util.ArrayList;
 import simpleGwent.card.Card;
 import simpleGwent.card.weatherCard;
 import java.util.Random;
+import simpleGwent.containers.CardList;
+import simpleGwent.containers.WeatherList;
 
 public class Hand {
 
-    private ArrayList<weatherCard> wcards;
-    private ArrayList<Card> cards;
+    private WeatherList wcards;
+    private CardList cards;
     private int handSize;
 
     public Hand() {
-        this.wcards = new ArrayList<>();
-        this.cards = new ArrayList<>();
+        this.wcards = new WeatherList();
+        this.cards = new CardList();
         this.handSize = 0;
     }
 
@@ -36,6 +37,14 @@ public class Hand {
 
     public int getHandSize() {
         return this.handSize;
+    }
+    
+    public int getCardCount() {
+        return this.cards.size();
+    }
+    
+    public int getWeatherCount() {
+        return this.wcards.size();
     }
 
     public void addCard(int points, int row) {
@@ -167,24 +176,28 @@ public class Hand {
         return card;
     }
 
-    public void removeCardwithIndex(int index) {
+    public Card getCardwithIndex(int index) {
+        Card card = this.cards.get(index);
         this.cards.remove(index);
         this.handSize--;
+        return card;
     }
 
-    public void removeWeatherWithIndex(int index) {
+    public weatherCard getWeatherWithIndex(int index) {
+        weatherCard wc = wcards.get(index);
         this.wcards.remove(index);
         this.handSize--;
+        return wc;
     }
 
     @Override
     public String toString() {
-        String returned = "";
+        String returned = "|";
         for (int i = 0; i < this.cards.size(); i++) {
-            returned += "|" + this.cards.get(i).toString() + "|";
+            returned += this.cards.get(i).toString() + "|";
         }
         for (int i = 0; i < this.wcards.size(); i++) {
-            returned += "|" + this.wcards.get(i).toString() + "|";
+            returned += this.wcards.get(i).toString() + "|";
         }
         return returned;
     }

@@ -82,21 +82,15 @@ public class HandTest {
     
     @Test
     public void removesCardWithIndex() {
-        hand.removeCardwithIndex(1);
+        hand.getCardwithIndex(1);
         assertEquals(hand.getHandSize(), 6);
         assertEquals(hand.getTheBiggest().getValue(), 7);
     }
     
     @Test
     public void removesWeatherCardWithIndex() {
-        hand.removeWeatherWithIndex(0);
+        hand.getWeatherWithIndex(0);
         assertEquals(hand.getHandSize(), 6);
         assertEquals(hand.getWeather(1), null);
-    }
-    
-    @Test
-    public void returnsCorrectToString() {
-        String text = "|3||10||1||7||5||*||^|";
-        assertEquals(hand.toString(), text);
     }
 }

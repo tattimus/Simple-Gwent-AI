@@ -37,7 +37,7 @@ public class CardTest {
     
     @Test
     public void returnsProperToString() {
-        assertEquals(card.toString(), "3");
+        assertEquals(card.toString(), "3/1");
     }
     
 }

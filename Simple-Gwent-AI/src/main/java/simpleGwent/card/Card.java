@@ -43,7 +43,7 @@ public class Card {
 
     @Override
     public String toString() {
-        return this.getValue() + "";
+        return this.getValue() + "/" + this.getRow();
     }
 
 }

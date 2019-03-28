@@ -20,7 +20,6 @@ public class BoardTest {
         board.playCard(2, new Card(3, 2));
         board.playCard(2, new Card(10, 3));
         board.setWeather(new weatherCard(11));
-        board.toggleWeatherOfRow1(true);
     }
 
     @Test
@@ -53,7 +52,7 @@ public class BoardTest {
         int points2 = board.getPointsOfRow2(2, true);
         assertEquals(points1, 1);
         assertEquals(points2, 3);
-        board.toggleWeatherOfRow2(true);
+        board.setWeather(new weatherCard(12));
         int points1w = board.getPointsOfRow2(1, true);
         int points2w = board.getPointsOfRow2(2, true);
         assertEquals(points1w, 1);
@@ -63,7 +62,6 @@ public class BoardTest {
     @Test
     public void returnsCurrentWeatherState() {
         board.setWeather(new weatherCard(13));
-        board.toggleWeatherOfRow3(true);
         int[] wet = board.getWeather();
         assertEquals(wet[0], 1);
         assertEquals(wet[1], 0);
@@ -73,8 +71,29 @@ public class BoardTest {
     @Test
     public void playerSkipCanBeSetAndReturnValueIsCorrect() {
         board.setSkip(1, true);
-        assertEquals(board.opponentHasSkipped(2), true);
-        assertEquals(board.opponentHasSkipped(1), false);
+        assertEquals(board.playerHasSkipped(2), false);
+        assertEquals(board.playerHasSkipped(1), true);
+    }
+    
+    @Test
+    public void returnsSumOfPlayersTotalPoints() {
+        assertEquals(board.getPointsOfPlayer(2, true), 14);
+        assertEquals(board.getPointsOfPlayer(2, false), 18);
+    }
+    
+    @Test
+    public void boardIsCleared() {
+        board.clearBoard();
+        assertEquals(board.getPointsOfPlayer(1, true), 0);
+    }
+    
+    @Test
+    public void roundWinsCanBeAddedAndRetrieved() {
+        board.addWinToPlayer(1);
+        board.addWinToPlayer(2);
+        board.addWinToPlayer(2);
+        assertEquals(board.roundsWonByPlayer(1), 1);
+        assertEquals(board.roundsWonByPlayer(2), 2);
     }
 
 }
