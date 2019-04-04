@@ -1,8 +1,9 @@
 package simpleGwent.board;
 
-import java.util.ArrayList;
 import simpleGwent.card.Card;
 import simpleGwent.card.weatherCard;
+import simpleGwent.containers.BoardSide;
+import simpleGwent.containers.CardList;
 
 public class Board {
 
@@ -10,21 +11,13 @@ public class Board {
     private boolean p2Skip;
     private int p1wins;
     private int p2wins;
-    private ArrayList<Card> p1row1;
-    private ArrayList<Card> p1row2;
-    private ArrayList<Card> p1row3;
-    private ArrayList<Card> p2row1;
-    private ArrayList<Card> p2row2;
-    private ArrayList<Card> p2row3;
+    private BoardSide p1Side;
+    private BoardSide p2Side;
     private int[] weather;
 
     public Board() {
-        this.p1row1 = new ArrayList<>();
-        this.p1row2 = new ArrayList<>();
-        this.p1row3 = new ArrayList<>();
-        this.p2row1 = new ArrayList<>();
-        this.p2row2 = new ArrayList<>();
-        this.p2row3 = new ArrayList<>();
+        this.p1Side = new BoardSide();
+        this.p2Side = new BoardSide();
         this.weather = new int[]{0, 0, 0};
         this.p1Skip = false;
         this.p2Skip = false;
@@ -39,28 +32,16 @@ public class Board {
         if (this.getWeather()[card.getRow() - 1] == 1) {
             card.setAffected(true);
         }
-        if (playerNo == 1 && card.getRow() == 1) {
-            this.p1row1.add(card);
-        } else if (playerNo == 1 && card.getRow() == 2) {
-            this.p1row2.add(card);
-        } else if (playerNo == 1 && card.getRow() == 3) {
-            this.p1row3.add(card);
-        } else if (playerNo == 2 && card.getRow() == 1) {
-            this.p2row1.add(card);
-        } else if (playerNo == 2 && card.getRow() == 2) {
-            this.p2row2.add(card);
+        if (playerNo == 1) {
+            this.p1Side.addToRow(card);
         } else {
-            this.p2row3.add(card);
+            this.p2Side.addToRow(card);
         }
     }
 
     public void clearBoard() {
-        p1row1 = new ArrayList<>();
-        p1row2 = new ArrayList<>();
-        p1row3 = new ArrayList<>();
-        p2row1 = new ArrayList<>();
-        p2row2 = new ArrayList<>();
-        p2row3 = new ArrayList<>();
+        this.p1Side.resetSide();
+        this.p2Side.resetSide();
         this.weather[0] = 0;
         this.weather[1] = 0;
         this.weather[2] = 0;
@@ -93,29 +74,35 @@ public class Board {
      * Used to pass the weather effect to the cards on first row
      */
     private void toggleWeatherOfRow1(boolean to) {
-        for (int i = 0; i < this.p1row1.size(); i++) {
-            this.p1row1.get(i).setAffected(to);
+        CardList rowp1 = this.p1Side.getRow(1);
+        CardList rowp2 = this.p2Side.getRow(1);
+        for (int i = 0; i < rowp1.size(); i++) {
+            rowp1.get(i).setAffected(to);
         }
-        for (int i = 0; i < this.p2row1.size(); i++) {
-            this.p2row1.get(i).setAffected(to);
+        for (int i = 0; i < rowp2.size(); i++) {
+            rowp2.get(i).setAffected(to);
         }
     }
 
     private void toggleWeatherOfRow2(boolean to) {
-        for (int i = 0; i < this.p1row2.size(); i++) {
-            this.p1row2.get(i).setAffected(to);
+        CardList rowp1 = this.p1Side.getRow(2);
+        CardList rowp2 = this.p2Side.getRow(2);
+        for (int i = 0; i < rowp1.size(); i++) {
+            rowp1.get(i).setAffected(to);
         }
-        for (int i = 0; i < this.p2row2.size(); i++) {
-            this.p2row2.get(i).setAffected(to);
+        for (int i = 0; i < rowp2.size(); i++) {
+            rowp2.get(i).setAffected(to);
         }
     }
 
     private void toggleWeatherOfRow3(boolean to) {
-        for (int i = 0; i < this.p1row3.size(); i++) {
-            this.p1row3.get(i).setAffected(to);
+        CardList rowp1 = this.p1Side.getRow(3);
+        CardList rowp2 = this.p2Side.getRow(3);
+        for (int i = 0; i < rowp1.size(); i++) {
+            rowp1.get(i).setAffected(to);
         }
-        for (int i = 0; i < this.p2row3.size(); i++) {
-            this.p2row3.get(i).setAffected(to);
+        for (int i = 0; i < rowp2.size(); i++) {
+            rowp2.get(i).setAffected(to);
         }
     }
 
@@ -131,11 +118,11 @@ public class Board {
      */
     public int getPointsOfRow1(int player, boolean weather) {
         int sum = 0;
-        ArrayList<Card> cards;
+        CardList cards;
         if (player == 1) {
-            cards = this.p1row1;
+            cards = p1Side.getRow(1);
         } else {
-            cards = this.p2row1;
+            cards = p2Side.getRow(1);
         }
         for (int i = 0; i < cards.size(); i++) {
             if (weather) {
@@ -153,11 +140,11 @@ public class Board {
      */
     public int getPointsOfRow2(int player, boolean weather) {
         int sum = 0;
-        ArrayList<Card> cards;
+        CardList cards;
         if (player == 1) {
-            cards = this.p1row2;
+            cards = p1Side.getRow(2);
         } else {
-            cards = this.p2row2;
+            cards = p2Side.getRow(2);
         }
         for (int i = 0; i < cards.size(); i++) {
             if (weather) {
@@ -175,11 +162,11 @@ public class Board {
      */
     public int getPointsOfRow3(int player, boolean weather) {
         int sum = 0;
-        ArrayList<Card> cards;
+        CardList cards;
         if (player == 1) {
-            cards = this.p1row3;
+            cards = p1Side.getRow(3);
         } else {
-            cards = this.p2row3;
+            cards = p2Side.getRow(3);
         }
         for (int i = 0; i < cards.size(); i++) {
             if (weather) {
@@ -189,6 +176,16 @@ public class Board {
             }
         }
         return sum;
+    }
+    
+    public int getAmountOfCardsInRow(int player, int row) {
+        int cards;
+        if (player == 1) {
+            cards = this.p1Side.getRow(row).size();
+        } else {
+            cards = this.p2Side.getRow(row).size();
+        }
+        return cards;
     }
 
     /**
@@ -227,6 +224,14 @@ public class Board {
             return p2Skip;
         }
     }
+    
+    public int getOpponentsNumber(int player) {
+        if (player == 1) {
+            return 2;
+        } else {
+            return 1;
+        }
+    }
 
     /**
      * used when player wins a round
@@ -247,7 +252,7 @@ public class Board {
         }
     }
 
-    private void printLine(ArrayList<Card> cards) {
+    private void printLine(CardList cards) {
         System.out.print("|");
         for (int i = 0; i < cards.size(); i++) {
             System.out.print("-" + cards.get(i).getValue());
@@ -274,12 +279,12 @@ public class Board {
      * Text representation of the board
      */
     public void printBoard() {
-        printLine(this.p2row3);
-        printLine(this.p2row2);
-        printLine(this.p2row1);
+        printLine(p2Side.getRow(3));
+        printLine(p2Side.getRow(2));
+        printLine(p2Side.getRow(1));
         printWeather();
-        printLine(this.p1row1);
-        printLine(this.p1row2);
-        printLine(this.p1row3);
+        printLine(p1Side.getRow(1));
+        printLine(p1Side.getRow(2));
+        printLine(p1Side.getRow(3));
     }
 }

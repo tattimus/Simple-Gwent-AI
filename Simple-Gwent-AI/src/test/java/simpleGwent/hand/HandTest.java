@@ -93,4 +93,22 @@ public class HandTest {
         assertEquals(hand.getHandSize(), 6);
         assertEquals(hand.getWeather(1), null);
     }
+    
+    @Test
+    public void biggestValueCardFromChosenRowIsReturned() {
+        Card big = hand.getBiggestFromRow(2);
+        assertEquals(big.getValue(), 7);
+    }
+    
+    @Test
+    public void smallesValueCardFromChosenRowIsReturned() {
+        Card small = hand.getSmallestFromRow(2);
+        assertEquals(small.getValue(), 5);
+    }
+    
+    @Test
+    public void handContainsWeatherIsCheckedCorrectly() {
+        assertEquals(hand.hasWeatherForRow(1), true);
+        assertEquals(hand.hasWeatherForRow(2), false);
+    }
 }

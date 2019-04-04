@@ -95,5 +95,24 @@ public class BoardTest {
         assertEquals(board.roundsWonByPlayer(1), 1);
         assertEquals(board.roundsWonByPlayer(2), 2);
     }
+    
+    @Test
+    public void numberOfCardsIsReturned() {
+        assertEquals(board.getAmountOfCardsInRow(1, 1), 1);
+        assertEquals(board.getAmountOfCardsInRow(2, 3), 1);
+    }
+    
+    @Test
+    public void weatherCanBeCleared() {
+        assertEquals(board.getWeather()[0], 1);
+        board.setWeather(new weatherCard(14));
+        assertEquals(board.getWeather()[0], 0);
+    }
+    
+    @Test
+    public void opponentsPlayerNumberIsGiven() {
+        assertEquals(board.getOpponentsNumber(1), 2);
+        assertEquals(board.getOpponentsNumber(2), 1);
+    }
 
 }

@@ -38,11 +38,11 @@ public class Hand {
     public int getHandSize() {
         return this.handSize;
     }
-    
+
     public int getCardCount() {
         return this.cards.size();
     }
-    
+
     public int getWeatherCount() {
         return this.wcards.size();
     }
@@ -145,6 +145,42 @@ public class Hand {
         return smallest;
     }
 
+    public Card getBiggestFromRow(int row) {
+        Card biggest = null;
+        int points = 0;
+        int biggestIndex = 999;
+        for (int i = 0; i < this.cards.size(); i++) {
+            if (this.cards.get(i).getValue() > points && this.cards.get(i).getRow() == row) {
+                biggest = this.cards.get(i);
+                biggestIndex = i;
+                points = this.cards.get(i).getValue();
+            }
+        }
+        if (biggestIndex != 999) {
+            this.cards.remove(biggestIndex);
+            this.handSize--;
+        }
+        return biggest;
+    }
+
+    public Card getSmallestFromRow(int row) {
+        Card smallest = null;
+        int points = 11;
+        int smallestIndex = 999;
+        for (int i = 0; i < this.cards.size(); i++) {
+            if (this.cards.get(i).getValue() < points && this.cards.get(i).getRow() == row) {
+                smallest = this.cards.get(i);
+                smallestIndex = i;
+                points = this.cards.get(i).getValue();
+            }
+        }
+        if (smallestIndex != 999) {
+            this.cards.remove(smallestIndex);
+            this.handSize--;
+        }
+        return smallest;
+    }
+
     /**
      * returns first card found that goes to specified row
      */
@@ -174,6 +210,19 @@ public class Hand {
             i++;
         }
         return card;
+    }
+    
+    public WeatherList getWeatherList() {
+        return wcards;
+    }
+    
+    public boolean hasWeatherForRow(int row) {
+        for (int i = 0; i < wcards.size(); i++) {
+            if (wcards.get(i).getRow() == row) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public Card getCardwithIndex(int index) {
