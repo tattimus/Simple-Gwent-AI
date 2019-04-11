@@ -21,21 +21,27 @@ public class GwentAI implements Player {
     public void setBoard(Board board) {
         this.board = board;
     }
-    
+
     public void resetHand() {
         this.hand = new Hand();
     }
-    
+
     public void addToHand(int value, int row) {
         this.hand.addCard(value, row);
     }
-    
+
     public void addWeatherToHand(int value) {
         this.hand.addWeatherCard(value);
     }
 
+    /**
+     * Choose play depending on the card count
+     */
     @Override
     public Board play() {
+        if (handHasPointCards()) {
+            playCards();
+        }
         skipRound();
         return this.board;
     }
@@ -51,23 +57,54 @@ public class GwentAI implements Player {
         for (int i = 0; i < hand.getHandSize(); i++) {
             line += "?|";
         }
-        System.out.println(line);
+        System.out.print(line);
+        System.out.println(" " + hand.getCardCount() + ":" + hand.getWeatherCount());
     }
 
-    public void roundAdvantagePlay() {
-
+    /**
+     * Choose play depending on boards point situation
+     */
+    public void playCards() {
+        if (winningInPoints()) {
+            if (board.playerHasSkipped(board.getOpponentsNumber(playerNo))) {
+                skipRound();
+            } else {
+                pointAdvantagePlay();
+            }
+        } else {
+            pointDisadvantagePlay();
+        }
     }
 
-    public void roundDisadvantagePlay() {
-
-    }
-
+    /**
+     * Moves to make if winning in points
+     */
     public void pointAdvantagePlay() {
-
+        if (safePointDifference()) {
+            skipRound();
+        } else if (winningInRounds()) { // play smallest to row with no weather
+            int lane = bestLaneToPlay();
+            if (board.getWeather()[lane - 1] == 1) {
+                board.playCard(playerNo, hand.getTheSmallest());
+            } else {
+                board.playCard(playerNo, hand.getSmallestFromRow(lane));
+            }
+        } else if (!checkWeatherCards()) { // check if weather play helps, if not -> play small
+            int lane = bestLaneToPlay();
+            if (board.getWeather()[lane - 1] == 1) {
+                board.playCard(playerNo, hand.getTheSmallest());
+            } else {
+                board.playCard(playerNo, hand.getSmallestFromRow(lane));
+            }
+        }
     }
 
     public void pointDisadvantagePlay() {
+        if (handPointsGreaterThanPointDifference()) {
 
+        } else {
+
+        }
     }
 
     /**
@@ -265,5 +302,44 @@ public class GwentAI implements Player {
         int opponentsPoints = board.getPointsOfPlayer(board.getOpponentsNumber(playerNo), true);
         return (ownPointsNoWeather - opponentsPointsNoWeather) > (ownPoints - opponentsPoints)
                 && ownPointsNoWeather - opponentsPointsNoWeather > 0;
+    }
+
+    /**
+     * check if hand has point cards, if not -> play weather or skip
+     */
+    public boolean handHasPointCards() {
+        if (hand.getCardCount() > 0) {
+            return true;
+        } else {
+            if (!checkWeatherCards()) {
+                skipRound();
+            }
+            return false;
+        }
+    }
+
+    /**
+     * Is the point difference big enough to skip
+     */
+    public boolean safePointDifference() {
+        int safeThres;
+        int pointDiff = board.getPointsOfPlayer(playerNo, true)
+                - board.getPointsOfPlayer(board.getOpponentsNumber(playerNo), true);
+        if (winningInRounds()) {
+            safeThres = 4;
+        } else {
+            safeThres = 8;
+        }
+        return pointDiff > (safeThres * hand.getHandSize());
+    }
+
+    /**
+     * Is the sum of card points enough to gain lead
+     */
+    public boolean handPointsGreaterThanPointDifference() {
+        int handPoints = hand.rowPoints(1) + hand.rowPoints(2) + hand.rowPoints(3);
+        int pointDiff = board.getPointsOfPlayer(board.getOpponentsNumber(playerNo), true)
+                - board.getPointsOfPlayer(playerNo, true);
+        return handPoints > pointDiff;
     }
 }
