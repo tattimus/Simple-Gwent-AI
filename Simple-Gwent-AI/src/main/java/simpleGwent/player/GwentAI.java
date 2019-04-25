@@ -1,6 +1,7 @@
 package simpleGwent.player;
 
 import simpleGwent.board.Board;
+import simpleGwent.card.Card;
 import simpleGwent.containers.WeatherList;
 import simpleGwent.hand.Hand;
 
@@ -9,12 +10,14 @@ public class GwentAI implements Player {
     private int playerNo;
     private Board board;
     private Hand hand;
+    private String stats;
 
     public GwentAI(int playerNo, Board board) {
         this.playerNo = playerNo;
         this.board = board;
         this.hand = new Hand();
         this.hand.createHand();
+        this.stats = "" + hand.getCardCount() + hand.getWeatherCount();
     }
 
     @Override
@@ -22,6 +25,9 @@ public class GwentAI implements Player {
         this.board = board;
     }
 
+    /**
+     * Empty hand
+     */
     public void resetHand() {
         this.hand = new Hand();
     }
@@ -42,7 +48,6 @@ public class GwentAI implements Player {
         if (handHasPointCards()) {
             playCards();
         }
-        skipRound();
         return this.board;
     }
 
@@ -53,12 +58,16 @@ public class GwentAI implements Player {
 
     @Override
     public void printHand() {
-        String line = "|";
+        String print = "|";
         for (int i = 0; i < hand.getHandSize(); i++) {
-            line += "?|";
+            print += "?|";
         }
-        System.out.print(line);
-        System.out.println(" " + hand.getCardCount() + ":" + hand.getWeatherCount());
+        System.out.println(print);
+    }
+
+    /** print used in testing */
+    public void printStats() {
+        System.out.println(stats);
     }
 
     /**
@@ -83,11 +92,16 @@ public class GwentAI implements Player {
         if (safePointDifference()) {
             skipRound();
         } else if (winningInRounds()) { // play smallest to row with no weather
-            int lane = bestLaneToPlay();
+            int lane = bestLaneToPlayIfWinning();
             if (board.getWeather()[lane - 1] == 1) {
                 board.playCard(playerNo, hand.getTheSmallest());
             } else {
-                board.playCard(playerNo, hand.getSmallestFromRow(lane));
+                Card card = hand.getSmallestFromRow(lane);
+                if (card != null) {
+                    board.playCard(playerNo, card);
+                } else {
+                    board.playCard(playerNo, hand.getSmallestFromRow(bestLaneToPlay()));
+                }
             }
         } else if (!checkWeatherCards()) { // check if weather play helps, if not -> play small
             int lane = bestLaneToPlay();
@@ -99,18 +113,69 @@ public class GwentAI implements Player {
         }
     }
 
+    /**
+     * Moves to make if losing in points
+     */
     public void pointDisadvantagePlay() {
-        if (handPointsGreaterThanPointDifference()) {
-
-        } else {
-
+        if (handPointsGreaterThanPointDifference()) { // Is it still possible to win this round?
+            if (winningInRounds()) {
+                if (!checkWeatherCards()) { // does playing weather help?
+                    int pointDiff = board.getPointsOfPlayer(board.getOpponentsNumber(playerNo), true)
+                            - board.getPointsOfPlayer(playerNo, true);
+                    if (pointDiff > hand.getCardCount() * 2) { // dont play all cards if winning in rounds
+                        skipRound();
+                    } else { // if point difference small enough, play something small
+                        int row = bestLaneToPlayIfWinning();
+                        if (board.getWeather()[row - 1] == 0) {
+                            Card card = hand.getSmallestFromRow(row);
+                            if (card != null) {
+                                board.playCard(playerNo, card);
+                            } else {
+                                board.playCard(playerNo, hand.getSmallestFromRow(bestLaneToPlay()));
+                            }
+                        } else if (board.playerHasSkipped(board.getOpponentsNumber(playerNo))) {
+                            board.playCard(playerNo, hand.getTheSmallest());
+                        } else {
+                            skipRound();
+                        }
+                    }
+                }
+            } else { // Play cards to gain point lead
+                int row = bestLaneToPlay();
+                if (board.getWeather()[row - 1] == 1) {
+                    board.playCard(playerNo, hand.getTheSmallest());
+                } else {
+                    int pointDiff = board.getPointsOfPlayer(board.getOpponentsNumber(playerNo), true)
+                            - board.getPointsOfPlayer(playerNo, true);
+                    Card card = hand.getCardEqualOrGreater(pointDiff, row);
+                    if (card == null) {
+                        board.playCard(playerNo, hand.getBiggestFromRow(row));
+                    } else {
+                        board.playCard(playerNo, card);
+                    }
+                }
+            }
+        } else if (!checkWeatherCards()) { // does weather help?
+            if (winningInRounds()) { // if hopeless but winning in rounds -> give up
+                skipRound();
+            } else { // fight 'til the bitter end
+                int row = bestLaneToPlay();
+                if (board.getWeather()[row - 1] == 1) {
+                    board.playCard(playerNo, hand.getTheBiggest());
+                } else {
+                    board.playCard(playerNo, hand.getBiggestFromRow(row));
+                }
+            }
         }
     }
 
     /**
-     * returns true if AI is winning
+     * returns true if AI is winning or if in first round
      */
     public boolean winningInRounds() {
+        if (board.roundsWonByPlayer(1) == 0 && board.roundsWonByPlayer(2) == 0) {
+            return true;
+        }
         return board.roundsWonByPlayer(playerNo)
                 > board.roundsWonByPlayer(board.getOpponentsNumber(playerNo));
     }
@@ -132,7 +197,7 @@ public class GwentAI implements Player {
         for (int i = 0; i < wl.size(); i++) {
             if (wl.get(i).getRow() == 0) {
                 if (clearingWeatherHelps()) {
-                    board.setWeather(hand.getWeather(0));
+                    board.setWeather(hand.getWeather(wl.get(i).getRow()));
                     return true;
                 }
             } else if (playingWeatherHelps(wl.get(i).getRow())) {
@@ -162,7 +227,39 @@ public class GwentAI implements Player {
     }
 
     /**
-     * counts the value of the lane, bigger value means better
+     * suggests playing cards that might later prevent AI from playing its
+     * weather cards, only used when winning in rounds or during first round
+     */
+    public int bestLaneToPlayIfWinning() {
+        int row1 = pointsForLane1();
+        int row2 = pointsForLane2();
+        int row3 = pointsForLane3();
+        if (row1 > 0) {
+            if (hand.hasWeatherForRow(1)) {
+                row1 += 3;
+            }
+        }
+        if (row2 > 0) {
+            if (hand.hasWeatherForRow(2)) {
+                row2 += 3;
+            }
+        }
+        if (row3 > 0) {
+            if (hand.hasWeatherForRow(3)) {
+                row3 += 3;
+            }
+        }
+        if (row1 > row2 && row1 > row3) {
+            return 1;
+        } else if (row2 > row1 && row2 > row3) {
+            return 2;
+        } else {
+            return 3;
+        }
+    }
+
+    /**
+     * counts the value of the lane, bigger value means higher priority
      */
     private int pointsForLane1() {
         int sum = 0;
@@ -174,14 +271,13 @@ public class GwentAI implements Player {
         if (board.getWeather()[0] == 0) {
             sum += 2;
         }
+        if (hand.hasWeatherForRow(2) || hand.hasWeatherForRow(3)) {
+            sum++;
+        }
         if (hand.rowPoints(1) >= hand.rowPoints(2)) {
             sum++;
         }
         if (hand.rowPoints(1) >= hand.rowPoints(3)) {
-            sum++;
-        }
-        if (hand.rowCards(1) >= hand.rowCards(2)
-                && hand.rowCards(1) >= hand.rowCards(3)) {
             sum++;
         }
         if (hand.hasWeatherForRow(1)) {
@@ -189,6 +285,16 @@ public class GwentAI implements Player {
         }
         if (hand.hasWeatherForRow(0)) {
             sum++;
+            if (hand.rowCards(1) >= hand.rowCards(2)
+                    && hand.rowCards(1) >= hand.rowCards(3)) {
+                sum++;
+            }
+            if (hand.rowPoints(1) >= hand.rowPoints(2)) {
+                sum++;
+            }
+            if (hand.rowPoints(1) >= hand.rowPoints(3)) {
+                sum++;
+            }
         }
         return sum;
     }
@@ -203,14 +309,13 @@ public class GwentAI implements Player {
         if (board.getWeather()[1] == 0) {
             sum += 2;
         }
+        if (hand.hasWeatherForRow(1) || hand.hasWeatherForRow(3)) {
+            sum++;
+        }
         if (hand.rowPoints(2) >= hand.rowPoints(1)) {
             sum++;
         }
         if (hand.rowPoints(2) >= hand.rowPoints(3)) {
-            sum++;
-        }
-        if (hand.rowCards(2) >= hand.rowCards(1)
-                && hand.rowCards(2) >= hand.rowCards(3)) {
             sum++;
         }
         if (hand.hasWeatherForRow(2)) {
@@ -218,6 +323,16 @@ public class GwentAI implements Player {
         }
         if (hand.hasWeatherForRow(0)) {
             sum++;
+            if (hand.rowCards(2) >= hand.rowCards(1)
+                    && hand.rowCards(2) >= hand.rowCards(3)) {
+                sum++;
+            }
+            if (hand.rowPoints(2) >= hand.rowPoints(1)) {
+                sum++;
+            }
+            if (hand.rowPoints(2) >= hand.rowPoints(3)) {
+                sum++;
+            }
         }
         return sum;
     }
@@ -232,14 +347,13 @@ public class GwentAI implements Player {
         if (board.getWeather()[2] == 0) {
             sum += 2;
         }
+        if (hand.hasWeatherForRow(1) || hand.hasWeatherForRow(2)) {
+            sum++;
+        }
         if (hand.rowPoints(3) >= hand.rowPoints(2)) {
             sum++;
         }
         if (hand.rowPoints(3) >= hand.rowPoints(1)) {
-            sum++;
-        }
-        if (hand.rowCards(3) >= hand.rowCards(1)
-                && hand.rowCards(3) >= hand.rowCards(2)) {
             sum++;
         }
         if (hand.hasWeatherForRow(3)) {
@@ -247,6 +361,16 @@ public class GwentAI implements Player {
         }
         if (hand.hasWeatherForRow(0)) {
             sum++;
+            if (hand.rowCards(3) >= hand.rowCards(1)
+                    && hand.rowCards(3) >= hand.rowCards(2)) {
+                sum++;
+            }
+            if (hand.rowPoints(3) >= hand.rowPoints(2)) {
+                sum++;
+            }
+            if (hand.rowPoints(3) >= hand.rowPoints(1)) {
+                sum++;
+            }
         }
         return sum;
     }
@@ -326,18 +450,36 @@ public class GwentAI implements Player {
         int pointDiff = board.getPointsOfPlayer(playerNo, true)
                 - board.getPointsOfPlayer(board.getOpponentsNumber(playerNo), true);
         if (winningInRounds()) {
-            safeThres = 4;
+            safeThres = 1;
         } else {
             safeThres = 8;
         }
-        return pointDiff > (safeThres * hand.getHandSize());
+        return pointDiff > (safeThres * hand.getCardCount());
     }
 
     /**
-     * Is the sum of card points enough to gain lead
+     * Is the sum of card points enough to gain lead, used when behind in points
      */
     public boolean handPointsGreaterThanPointDifference() {
-        int handPoints = hand.rowPoints(1) + hand.rowPoints(2) + hand.rowPoints(3);
+        int row1;
+        int row2;
+        int row3;
+        if (board.getWeather()[0] == 1) {
+            row1 = hand.rowCards(1);
+        } else {
+            row1 = hand.rowPoints(1);
+        }
+        if (board.getWeather()[1] == 1) {
+            row2 = hand.rowCards(2);
+        } else {
+            row2 = hand.rowPoints(2);
+        }
+        if (board.getWeather()[2] == 1) {
+            row3 = hand.rowCards(3);
+        } else {
+            row3 = hand.rowPoints(3);
+        }
+        int handPoints = row1 + row2 + row3;
         int pointDiff = board.getPointsOfPlayer(board.getOpponentsNumber(playerNo), true)
                 - board.getPointsOfPlayer(playerNo, true);
         return handPoints > pointDiff;

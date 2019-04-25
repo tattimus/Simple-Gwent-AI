@@ -177,7 +177,7 @@ public class Board {
         }
         return sum;
     }
-    
+
     public int getAmountOfCardsInRow(int player, int row) {
         int cards;
         if (player == 1) {
@@ -224,7 +224,10 @@ public class Board {
             return p2Skip;
         }
     }
-    
+
+    /**
+     * often used in method calls where caller needs to be specified
+     */
     public int getOpponentsNumber(int player) {
         if (player == 1) {
             return 2;
@@ -272,6 +275,23 @@ public class Board {
             print += ";";
         }
         print += "|";
+        System.out.print(print);
+    }
+
+    private void printScore() {
+        System.out.print("|" + this.getPointsOfPlayer(1, true)
+                + ":" + this.getPointsOfPlayer(2, true) + "|");
+    }
+
+    private void printSkips() {
+        String print = "|";
+        if (this.playerHasSkipped(1)) {
+            print += "P1:skipped";
+        }
+        if (this.playerHasSkipped(2)) {
+            print += "P2:skipped";
+        }
+        print += "|";
         System.out.println(print);
     }
 
@@ -282,7 +302,11 @@ public class Board {
         printLine(p2Side.getRow(3));
         printLine(p2Side.getRow(2));
         printLine(p2Side.getRow(1));
+        System.out.println("---");
         printWeather();
+        printScore();
+        printSkips();
+        System.out.println("---");
         printLine(p1Side.getRow(1));
         printLine(p1Side.getRow(2));
         printLine(p1Side.getRow(3));

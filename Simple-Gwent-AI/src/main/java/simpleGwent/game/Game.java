@@ -49,6 +49,7 @@ public class Game {
             P2.printHand();
             board.printBoard();
             P1.printHand();
+            System.out.println("");
             if (!board.playerHasSkipped(1)) {
                 P1.setBoard(board);
                 board = P1.play();
@@ -69,7 +70,11 @@ public class Game {
     }
 
     private void announceWinner() {
-        if (board.roundsWonByPlayer(1) == 2) {
+        P1.printStats();
+        P2.printStats();
+        if (board.roundsWonByPlayer(1) == 2 && board.roundsWonByPlayer(2) == 2) {
+            System.out.println("Game ends in tie !");
+        } else if (board.roundsWonByPlayer(1) == 2) {
             System.out.println("Player 1 wins the game !");
         } else {
             System.out.println("Player 2 wins the game !");

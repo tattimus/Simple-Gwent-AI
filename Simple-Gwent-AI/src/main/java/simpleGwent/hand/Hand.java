@@ -35,14 +35,23 @@ public class Hand {
         }
     }
 
+    /**
+     * count of all type of cards combined
+     */
     public int getHandSize() {
         return this.handSize;
     }
 
+    /**
+     * count of point cards
+     */
     public int getCardCount() {
         return this.cards.size();
     }
 
+    /**
+     * count of wether cards
+     */
     public int getWeatherCount() {
         return this.wcards.size();
     }
@@ -59,6 +68,9 @@ public class Hand {
         this.handSize += 1;
     }
 
+    /**
+     * returns sum of points that hand contains for specific lane
+     */
     public int rowPoints(int row) {
         int points = 0;
         for (int i = 0; i < this.cards.size(); i++) {
@@ -69,6 +81,9 @@ public class Hand {
         return points;
     }
 
+    /**
+     * how many cards does hand have for specific lane
+     */
     public int rowCards(int row) {
         int amount = 0;
         for (int i = 0; i < this.cards.size(); i++) {
@@ -117,6 +132,9 @@ public class Hand {
         return returned;
     }
 
+    /**
+     * returns biggest point card from hand
+     */
     public Card getTheBiggest() {
         Card biggest = this.cards.get(0);
         int biggestIndex = 0;
@@ -131,6 +149,9 @@ public class Hand {
         return biggest;
     }
 
+    /**
+     * returns smallest point card from hand
+     */
     public Card getTheSmallest() {
         Card smallest = this.cards.get(0);
         int smallestIndex = 0;
@@ -145,6 +166,9 @@ public class Hand {
         return smallest;
     }
 
+    /**
+     * returns biggest point card from specified row, if none -> return null
+     */
     public Card getBiggestFromRow(int row) {
         Card biggest = null;
         int points = 0;
@@ -163,6 +187,9 @@ public class Hand {
         return biggest;
     }
 
+    /**
+     * returns smallest point card from specified row, if none -> return null
+     */
     public Card getSmallestFromRow(int row) {
         Card smallest = null;
         int points = 11;
@@ -197,6 +224,7 @@ public class Hand {
         return returned;
     }
 
+    /** returns weather for lane, if none -> return null */
     public weatherCard getWeather(int row) {
         weatherCard card = null;
         int i = 0;
@@ -211,11 +239,14 @@ public class Hand {
         }
         return card;
     }
-    
+
     public WeatherList getWeatherList() {
         return wcards;
     }
-    
+
+    /**
+     * returns true if hand has weather for specified lane
+     */
     public boolean hasWeatherForRow(int row) {
         for (int i = 0; i < wcards.size(); i++) {
             if (wcards.get(i).getRow() == row) {

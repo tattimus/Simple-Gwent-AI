@@ -23,26 +23,35 @@ public class GwentPlayer implements Player {
     public void setBoard(Board board) {
         this.board = board;
     }
+    
+    @Override
+    public void printStats() {
+        System.out.println("");
+    }
 
     /**
      * handles turn of the human player
      */
     @Override
     public Board play() {
-        while (true) {
-            int command = askForCommand();
-            if (command == 0) {
-                skipRound();
-                break;
-            } else if (checkIfCard(command)) {
-                this.board.playCard(playerNo, this.hand.getCardwithIndex(command - 1));
-                break;
-            } else if (checkIfWeather(command)) {
-                this.board.setWeather(this.hand.getWeatherWithIndex((command - this.hand.getCardCount()) - 1));
-                break;
-            } else {
-                System.out.println("that's not a card");
+        if (hand.getHandSize() > 0) {
+            while (true) {
+                int command = askForCommand();
+                if (command == 0) {
+                    skipRound();
+                    break;
+                } else if (checkIfCard(command)) {
+                    this.board.playCard(playerNo, this.hand.getCardwithIndex(command - 1));
+                    break;
+                } else if (checkIfWeather(command)) {
+                    this.board.setWeather(this.hand.getWeatherWithIndex((command - this.hand.getCardCount()) - 1));
+                    break;
+                } else {
+                    System.out.println("that's not a card");
+                }
             }
+        } else {
+            board.setSkip(playerNo, true);
         }
         return this.board;
     }

@@ -8,5 +8,5 @@ public interface Player {
     void setBoard(Board board);
     void skipRound();
     void printHand();
-    
+    void printStats();
 }
