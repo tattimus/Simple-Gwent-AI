@@ -11,6 +11,9 @@ public class Game {
     private Player P1;
     private Player P2;
 
+    /**
+     * Setup game and its players depending on the mode
+     */
     public Game(int gameMode) {
         this.board = new Board();
         if (gameMode == 1) {
@@ -69,6 +72,9 @@ public class Game {
         return board.roundsWonByPlayer(1) == 2 || board.roundsWonByPlayer(2) == 2;
     }
 
+    /**
+     * Announce winner/tie and hand stats
+     */
     private void announceWinner() {
         P1.printStats();
         P2.printStats();
@@ -82,6 +88,9 @@ public class Game {
         System.out.println("Thank you for playing.");
     }
 
+    /**
+     * Reset board, not rounds won
+     */
     private void resetBoard() {
         board.clearBoard();
     }

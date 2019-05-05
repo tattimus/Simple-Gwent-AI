@@ -10,23 +10,31 @@ public class GwentPlayer implements Player {
     private Board board;
     private Hand hand;
     private Scanner scanner;
+    private String stats;
 
     public GwentPlayer(int playerNo, Board board) {
         this.playerNo = playerNo;
         this.board = board;
         this.hand = new Hand();
         this.hand.createHand();
+        this.stats = hand.getCardCount() + ":" + hand.getWeatherCount();
         this.scanner = new Scanner(System.in);
     }
 
+    /**
+     * Update board state
+     */
     @Override
     public void setBoard(Board board) {
         this.board = board;
     }
-    
+
+    /**
+     * Used for testing, tells the ratio of point and weathercards
+     */
     @Override
     public void printStats() {
-        System.out.println("");
+        System.out.println(stats);
     }
 
     /**
@@ -56,11 +64,17 @@ public class GwentPlayer implements Player {
         return this.board;
     }
 
+    /**
+     * Skips this round for the player
+     */
     @Override
     public void skipRound() {
         this.board.setSkip(playerNo, true);
     }
 
+    /**
+     * Text representation of players hand
+     */
     @Override
     public void printHand() {
         System.out.println(this.hand.toString());

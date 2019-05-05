@@ -39,6 +39,9 @@ public class Board {
         }
     }
 
+    /**
+     * Return board to starting state, with exception of rounds won
+     */
     public void clearBoard() {
         this.p1Side.resetSide();
         this.p2Side.resetSide();
@@ -84,6 +87,9 @@ public class Board {
         }
     }
 
+    /**
+     * Used to pass the weather effect to the cards on second row
+     */
     private void toggleWeatherOfRow2(boolean to) {
         CardList rowp1 = this.p1Side.getRow(2);
         CardList rowp2 = this.p2Side.getRow(2);
@@ -95,6 +101,9 @@ public class Board {
         }
     }
 
+    /**
+     * Used to pass the weather effect to the cards on third row
+     */
     private void toggleWeatherOfRow3(boolean to) {
         CardList rowp1 = this.p1Side.getRow(3);
         CardList rowp2 = this.p2Side.getRow(3);
@@ -106,6 +115,9 @@ public class Board {
         }
     }
 
+    /**
+     * Remove all weather effects from board and cards
+     */
     private void toggleWeatherOfAll() {
         toggleWeatherOfRow1(false);
         toggleWeatherOfRow2(false);
@@ -178,6 +190,9 @@ public class Board {
         return sum;
     }
 
+    /**
+     * How many cards player has palyed to specified row
+     */
     public int getAmountOfCardsInRow(int player, int row) {
         int cards;
         if (player == 1) {
@@ -199,6 +214,9 @@ public class Board {
         return points;
     }
 
+    /**
+     * Returns weather state of the board
+     */
     public int[] getWeather() {
         return this.weather;
     }
@@ -215,7 +233,7 @@ public class Board {
     }
 
     /**
-     * Tells to the player who asked if the opponent has skipped
+     * Tells if the opponent has skipped
      */
     public boolean playerHasSkipped(int player) {
         if (player == 1) {
@@ -247,6 +265,9 @@ public class Board {
         }
     }
 
+    /**
+     * Return rounds won by player
+     */
     public int roundsWonByPlayer(int player) {
         if (player == 1) {
             return p1wins;
@@ -255,6 +276,9 @@ public class Board {
         }
     }
 
+    /**
+     * Text representation of one of the lanes
+     */
     private void printLine(CardList cards) {
         System.out.print("|");
         for (int i = 0; i < cards.size(); i++) {
@@ -263,6 +287,9 @@ public class Board {
         System.out.println("-|");
     }
 
+    /**
+     * Text representation of weather state
+     */
     private void printWeather() {
         String print = "|";
         if (this.weather[0] == 1) {
@@ -278,11 +305,17 @@ public class Board {
         System.out.print(print);
     }
 
+    /**
+     * Text representation of point difference
+     */
     private void printScore() {
         System.out.print("|" + this.getPointsOfPlayer(1, true)
                 + ":" + this.getPointsOfPlayer(2, true) + "|");
     }
-
+    
+    /**
+     * Text representation of skips
+     */
     private void printSkips() {
         String print = "|";
         if (this.playerHasSkipped(1)) {

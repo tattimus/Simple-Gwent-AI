@@ -17,9 +17,12 @@ public class GwentAI implements Player {
         this.board = board;
         this.hand = new Hand();
         this.hand.createHand();
-        this.stats = "" + hand.getCardCount() + hand.getWeatherCount();
+        this.stats = hand.getCardCount() + ":" + hand.getWeatherCount();
     }
 
+    /**
+     * Update board state for the AI
+     */
     @Override
     public void setBoard(Board board) {
         this.board = board;
@@ -32,10 +35,16 @@ public class GwentAI implements Player {
         this.hand = new Hand();
     }
 
+    /**
+     * Add pointcard to hand
+     */
     public void addToHand(int value, int row) {
         this.hand.addCard(value, row);
     }
 
+    /**
+     * Add weathercard to hand
+     */
     public void addWeatherToHand(int value) {
         this.hand.addWeatherCard(value);
     }
@@ -51,11 +60,17 @@ public class GwentAI implements Player {
         return this.board;
     }
 
+    /**
+     * Skips current round for the AI
+     */
     @Override
     public void skipRound() {
         this.board.setSkip(playerNo, true);
     }
 
+    /**
+     * Text representation of AI's hand
+     */
     @Override
     public void printHand() {
         String print = "|";
@@ -65,7 +80,9 @@ public class GwentAI implements Player {
         System.out.println(print);
     }
 
-    /** print used in testing */
+    /**
+     * print used in testing, ratio of point- and weathercards
+     */
     public void printStats() {
         System.out.println(stats);
     }
@@ -299,6 +316,9 @@ public class GwentAI implements Player {
         return sum;
     }
 
+    /**
+     * counts the value of the lane, bigger value means higher priority
+     */
     private int pointsForLane2() {
         int sum = 0;
         if (hand.rowCards(2) == 0) {
@@ -337,6 +357,9 @@ public class GwentAI implements Player {
         return sum;
     }
 
+    /**
+     * counts the value of the lane, bigger value means higher priority
+     */
     private int pointsForLane3() {
         int sum = 0;
         if (hand.rowCards(3) == 0) {

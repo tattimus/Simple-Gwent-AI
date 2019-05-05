@@ -3,17 +3,20 @@ package simpleGwent.containers;
 import simpleGwent.card.Card;
 
 public class BoardSide {
-    
+
     private CardList row1;
     private CardList row2;
     private CardList row3;
-    
+
     public BoardSide() {
         this.row1 = new CardList();
         this.row2 = new CardList();
         this.row3 = new CardList();
     }
-    
+
+    /**
+     * Return rows cardlist
+     */
     public CardList getRow(int row) {
         if (row == 1) {
             return row1;
@@ -23,7 +26,10 @@ public class BoardSide {
             return row3;
         }
     }
-    
+
+    /**
+     * Add pointcard to correct row
+     */
     public void addToRow(Card card) {
         if (card.getRow() == 1) {
             row1.add(card);
@@ -33,11 +39,14 @@ public class BoardSide {
             row3.add(card);
         }
     }
-    
+
+    /**
+     * Empty rows from pointcards
+     */
     public void resetSide() {
         row1.empty();
         row2.empty();
         row3.empty();
     }
-    
+
 }

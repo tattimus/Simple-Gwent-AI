@@ -43,25 +43,31 @@ public class Hand {
     }
 
     /**
-     * count of point cards
+     * count of pointcards
      */
     public int getCardCount() {
         return this.cards.size();
     }
 
     /**
-     * count of wether cards
+     * count of wethercards
      */
     public int getWeatherCount() {
         return this.wcards.size();
     }
 
+    /**
+     * Add pointcard
+     */
     public void addCard(int points, int row) {
         Card card = new Card(points, row);
         this.cards.add(card);
         this.handSize += 1;
     }
 
+    /**
+     * Add weathercard
+     */
     public void addWeatherCard(int value) {
         weatherCard card = new weatherCard(value);
         this.wcards.add(card);
@@ -133,7 +139,7 @@ public class Hand {
     }
 
     /**
-     * returns biggest point card from hand
+     * returns biggest pointcard from hand
      */
     public Card getTheBiggest() {
         Card biggest = this.cards.get(0);
@@ -150,7 +156,7 @@ public class Hand {
     }
 
     /**
-     * returns smallest point card from hand
+     * returns smallest pointcard from hand
      */
     public Card getTheSmallest() {
         Card smallest = this.cards.get(0);
@@ -167,7 +173,7 @@ public class Hand {
     }
 
     /**
-     * returns biggest point card from specified row, if none -> return null
+     * returns biggest pointcard from specified row, if none -> return null
      */
     public Card getBiggestFromRow(int row) {
         Card biggest = null;
@@ -188,7 +194,7 @@ public class Hand {
     }
 
     /**
-     * returns smallest point card from specified row, if none -> return null
+     * returns smallest pointcard from specified row, if none -> return null
      */
     public Card getSmallestFromRow(int row) {
         Card smallest = null;
@@ -224,7 +230,9 @@ public class Hand {
         return returned;
     }
 
-    /** returns weather for lane, if none -> return null */
+    /**
+     * returns weather for lane, if none -> return null
+     */
     public weatherCard getWeather(int row) {
         weatherCard card = null;
         int i = 0;
@@ -240,6 +248,9 @@ public class Hand {
         return card;
     }
 
+    /**
+     * Returns weathercards in hand
+     */
     public WeatherList getWeatherList() {
         return wcards;
     }
@@ -256,6 +267,9 @@ public class Hand {
         return false;
     }
 
+    /**
+     * Returns pointcard with given index
+     */
     public Card getCardwithIndex(int index) {
         Card card = this.cards.get(index);
         this.cards.remove(index);
@@ -263,6 +277,9 @@ public class Hand {
         return card;
     }
 
+    /**
+     * Returns weathercard with given index
+     */
     public weatherCard getWeatherWithIndex(int index) {
         weatherCard wc = wcards.get(index);
         this.wcards.remove(index);
@@ -270,6 +287,9 @@ public class Hand {
         return wc;
     }
 
+    /**
+     * Text representation of hand
+     */
     @Override
     public String toString() {
         String returned = "|";
