@@ -1,5 +1,7 @@
 # Simple-Gwent-AI
 
+Projekti työ HY:n kurssille Aineopintojen harjoitustyö: Tietorakenteet ja algoritmit. Tarkoituksena toteuttaa ohjelma jossa Javan valmiiden kirjastojen käyttö on minimoitu. 
+
 ## Raportit
 * [Viikkoraportti 1](https://github.com/tattimus/Simple-Gwent-AI/blob/master/dokumentaatio/viikkoraportti1.pdf)
 * [Viikkoraportti 2](https://github.com/tattimus/Simple-Gwent-AI/blob/master/dokumentaatio/viikkoraportti2.pdf)
